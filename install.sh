@@ -19,24 +19,28 @@ echo "source $WORKING_DIR/ros/setup.bash" >> ~/.bashrc
 cd $WORKING_DIR/ros
 git clone http://git.mech.kuleuven.be/robotics/orocos_toolchain_ros.git
 cd orocos_toolchain_ros
-git checkout # checkout master, for branch: -b diamondback
+git checkout -b diamondback origin/diamondback
 git submodule init
 git submodule update --recursive
-export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:$ROS_PACKAGE_PATH
+echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> ~/.bashrc
+. ~/.bashrc
 rosmake orocos_toolchain_ros
-echo "Orocos built, do 'morse check' to verify"
+echo "source $WORKING_DIR/orocos_toolchain_ros/env.sh" >> ~/.bashrc
+. ~/.bashrc
+echo "Orocos built, do 'rosrun osl deployer-gnulinux' to check"
 
 ## Morse http://www.openrobots.org/morse/doc/user/installation.html
 cd $WORKING_DIR
 wget http://download.blender.org/release/Blender2.56abeta/blender-2.56a-beta-linux-glibc27-i686.tar.bz2
 tar jxf blender-2.56a-beta-linux-glibc27-i686.tar.bz2
-export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender
+echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender" >> ~/.bashrc
+. ~/.bashrc
 git clone https://github.com/laas/morse.git
 cd morse
 mkdir build && cd build
 cmake ..
 sudo make install
-echo "Morse built, do 'morse check' to verify"
+echo "Morse built, do 'morse check' to check"
 
 # Morse/ROS integration
 # http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html
@@ -50,7 +54,8 @@ python setup.py install
 cd $WORKING_DIR
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
 rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
-export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:${PYTHONPATH}
+echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> ~/.bashrc
+. ~/.bashrc
 
 echo "done!"
 
