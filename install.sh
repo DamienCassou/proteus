@@ -1,7 +1,7 @@
 #!/bin/sh
 ###############################################################################
 #
-#                             PROTEUS Project
+#                             PROTEUS
 #
 ###############################################################################
 
@@ -12,7 +12,7 @@ WORKING_DIR=`pwd`
 ### install script [draft]
 
 ## Dependencies
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git mercurial python3.1-dev libpython3.1 python-yaml libyaml-dev 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev libpython3.1 python-yaml libyaml-dev 
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
@@ -54,7 +54,7 @@ cd $WORKING_DIR
 wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz
 tar zxf PyYAML-3.09.tar.gz
 cd PyYAML-3.09
-python setup.py install
+sudo python3.1 setup.py install
 # ROS-Py3
 cd $WORKING_DIR
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
