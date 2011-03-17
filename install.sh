@@ -16,7 +16,7 @@ sudo apt-get install build-essential g++ cmake python-setuptools wget subversion
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
-rosinstall $WORKING_DIR/ros "http://packages.ros.org/cgi-bin/gen_rosinstall.py?rosdistro=diamondback&variant=ros-base&overlay=no"
+rosinstall $WORKING_DIR/ros "http://packages.ros.org/cgi-bin/gen_rosinstall.py?rosdistro=diamondback&variant=desktop-full&overlay=no"
 echo "source $WORKING_DIR/ros/setup.bash" >> ~/.bashrc
 . ~/.bashrc
 
@@ -43,7 +43,7 @@ echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/bl
 git clone https://github.com/laas/morse.git
 cd morse
 mkdir build && cd build
-cmake ..
+cmake -DBUILD_ROS_SUPPORT=ON  .. 
 sudo make install
 echo "Morse built, do 'morse check' to check"
 
@@ -63,4 +63,17 @@ echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> ~/
 . ~/.bashrc
 
 echo "done!"
+
+echo "Test https://github.com/kargm/morse_ros , ctrl+c to stop , any key to continue"
+read
+
+## TEST
+# cf https://github.com/kargm/morse_ros
+cd $WORKING_DIR/ros
+git https://github.com/kargm/morse_ros.git
+export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/morse_ros:$ROS_PACKAGE_PATH
+cd $WORKING_DIR/ros
+svn checkout https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/stacks/ias_nav/
+export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/ias_nav:$ROS_PACKAGE_PATH
+rosmake ias_nav
 
