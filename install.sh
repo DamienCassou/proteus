@@ -55,25 +55,33 @@ wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz
 tar zxf PyYAML-3.09.tar.gz
 cd PyYAML-3.09
 sudo python3.1 setup.py install
-# ROS-Py3
-cd $WORKING_DIR
-rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
-rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
-echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> ~/.bashrc
-. ~/.bashrc
 
+echo "ROS-Py3 : this step will modify ROS files, continue? [y,N]"
+echo "( http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html )"
+read TEST
+if [ "$TEST" = "y" ]; then
+  # ROS-Py3
+  cd $WORKING_DIR
+  rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
+  rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
+  echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> ~/.bashrc
+  . ~/.bashrc
+
+  echo "morse_ros ( https://github.com/kargm/morse_ros ) continue? [y,N]"
+  read TEST
+  if [ "$TEST" = "y" ]; then
+    ## TEST
+    # cf https://github.com/kargm/morse_ros
+    cd $WORKING_DIR/ros
+    git clone https://github.com/kargm/morse_ros.git
+    export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/morse_ros:$ROS_PACKAGE_PATH
+    cd $WORKING_DIR/ros
+    svn checkout https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/stacks/ias_nav/
+    export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/ias_nav:$ROS_PACKAGE_PATH
+    git clone http://code.in.tum.de/git/ias-common.git
+    export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/ias-common:$ROS_PACKAGE_PATH
+    rosmake ias_nav
+  fi
+fi
 echo "done!"
-
-echo "Test https://github.com/kargm/morse_ros , ctrl+c to stop , any key to continue"
-read
-
-## TEST
-# cf https://github.com/kargm/morse_ros
-cd $WORKING_DIR/ros
-git https://github.com/kargm/morse_ros.git
-export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/morse_ros:$ROS_PACKAGE_PATH
-cd $WORKING_DIR/ros
-svn checkout https://tum-ros-pkg.svn.sourceforge.net/svnroot/tum-ros-pkg/stacks/ias_nav/
-export ROS_PACKAGE_PATH=$WORKING_DIR/work/ros/ias_nav:$ROS_PACKAGE_PATH
-rosmake ias_nav
 
