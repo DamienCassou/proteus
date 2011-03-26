@@ -3,6 +3,11 @@
 #
 #                             PROTEUS
 #
+# HOWTO
+# cd ~/workspace 
+# wget https://github.com/pierriko/proteus/raw/master/install.sh
+# sh install.sh
+#
 ###############################################################################
 
 WORKING_DIR=`pwd`
@@ -32,7 +37,7 @@ echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAG
 rosmake orocos_toolchain_ros
 echo "source $WORKING_DIR/orocos_toolchain_ros/env.sh" >> ~/.bashrc
 . ~/.bashrc
-echo "Orocos built, do 'rosrun osl deployer-gnulinux' to check"
+echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
 ## Morse http://www.openrobots.org/morse/doc/user/installation.html
 cd $WORKING_DIR

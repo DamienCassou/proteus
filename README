@@ -6,7 +6,7 @@
 
 * see install.sh for install info
 
-
+wget https://github.com/pierriko/proteus/raw/master/install.sh && sh install.sh
 
 ===============================================================================
 
