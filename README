@@ -8,5 +8,14 @@
 
 wget https://github.com/pierriko/proteus/raw/master/install.sh && sh install.sh
 
+
+ * see: orocos.org <-> ros.org <-> morse.openrobots.org !
+ - http://www.ros.org/wiki/orocos_toolchain_ros
+ - http://wiki.blender.org/index.php/Robotics:Contents
+ - http://www.blender.org/development/release-logs/blender-256-beta/data-access
+ - http://www.openrobots.org/morse/doc/latest/user/middlewares/ros.html
+ - http://vimeo.com/groups/blenderandrobotics
+
+
 ===============================================================================
 

@@ -45,8 +45,12 @@ TIPS use Blender in debug mode (-d) to watch bpy calls
 cf:
  - http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
  - http://www.blender.org/documentation/250PythonDoc/bpy.ops.object.html#bpy.ops.object.parent_set
+ - http://www.blender.org/development/release-logs/blender-256-beta/data-access/
+ - http://wiki.blender.org/index.php/Extensions:2.5/Py/Scripts
  - http://wiki.blender.org/index.php/Robotics:Contents
+ - http://vimeo.com/groups/blenderandrobotics
  - http://www.openrobots.org/morse/doc/latest/user/tutorial.html
+ - https://github.com/pierriko/proteus
 
 /usr/local/bin/morse:339
     #Replace the current process by Blender

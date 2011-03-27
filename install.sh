@@ -61,7 +61,7 @@ tar zxf PyYAML-3.09.tar.gz
 cd PyYAML-3.09
 sudo python3.1 setup.py install
 
-echo "ROS-Py3 : this step will modify ROS files, continue? [y,N]"
+echo "ROS-Py3 : this step will patch ROS for a Python 3 support, continue? [y,N]"
 echo "( http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html )"
 read TEST
 if [ "$TEST" = "y" ]; then
