@@ -34,8 +34,16 @@ bpy.ops.wm.link_append(directory = MORSE_COMPONENTS +
   '/middleware/socket_empty.blend/Object/', filename = 'Socket_Empty')
 bpy.data.objects['Socket_Empty'].location=(0,0,1)
 
+# XXX modify /middleware/ros_empty.blend logic properties (ROSClass / ros_mw )
+bpy.ops.wm.link_append(directory = MORSE_COMPONENTS + 
+  '/middleware/ros_empty.blend/Object/', filename = 'ROS_Empty')
+bpy.data.objects['ROS_Empty'].location=(0,0,5)
+
+bpy.ops.object.make_local(type = 'ALL')
+
 # TODO modify component_config.py
 
+#bpy.ops.view3d.game_start()
 
 '''
 TODO look for "macro recording" in Blender
