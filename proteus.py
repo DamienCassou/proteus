@@ -34,14 +34,17 @@ bpy.ops.wm.link_append(directory = MORSE_COMPONENTS +
   '/middleware/socket_empty.blend/Object/', filename = 'Socket_Empty')
 bpy.data.objects['Socket_Empty'].location=(0,0,1)
 
-# XXX modify /middleware/ros_empty.blend logic properties (ROSClass / ros_mw )
+# XXX modify /middleware/ros_empty.blend logic properties (ROSClass / ros_mw)
 bpy.ops.wm.link_append(directory = MORSE_COMPONENTS + 
   '/middleware/ros_empty.blend/Object/', filename = 'ROS_Empty')
 bpy.data.objects['ROS_Empty'].location=(0,0,5)
 
-bpy.ops.object.make_local(type = 'ALL')
+#bpy.ops.object.make_local(type = 'ALL')
 
-# TODO modify component_config.py
+# modify component_config.py
+bpy.data.texts['component_config.py'].clear()
+bpy.data.texts['component_config.py'].write(
+  'component_mw = { "Gyroscope": ["ROS", "post_message"], "Motion_Controller": ["ROS", "read_message"] }\ncomponent_modifier = {}')
 
 #bpy.ops.view3d.game_start()
 
