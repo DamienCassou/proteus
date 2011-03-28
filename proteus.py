@@ -44,11 +44,23 @@ bpy.data.objects['ROS_Empty'].location=(0,0,5)
 # modify component_config.py
 bpy.data.texts['component_config.py'].clear()
 bpy.data.texts['component_config.py'].write(
-  'component_mw = { "Gyroscope": ["ROS", "post_message"], "Motion_Controller": ["ROS", "read_message"] }\ncomponent_modifier = {}')
+  'component_mw = {\n' +
+  '  "Gyroscope": ["ROS", "post_message"],\n' +
+  '  "Motion_Controller": ["ROS", "read_twist", "morse/middleware/ros/read_vw_twist"]\n' +
+  '}\n' +
+  'component_modifier = {}' )
+
+
+#bpy.data.texts['component_config.py'].write(
+#  'component_mw = { "Gyroscope": ["ROS", "post_message"], "Motion_Controller": ["ROS", "read_message"] }\ncomponent_modifier = {}')
 
 #bpy.ops.view3d.game_start()
 
+
 '''
+rostopic pub /ATRV/Motion_Controller geometry_msgs/Twist -1 [1,1,0] [0,0,1]
+rostopic echo -n 1 /ATRV/Gyroscope
+
 TODO look for "macro recording" in Blender
 TIPS use Blender in debug mode (-d) to watch bpy calls
   blender -d 2>/dev/null | grep bpy
