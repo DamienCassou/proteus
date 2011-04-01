@@ -34,25 +34,29 @@ bpy.ops.wm.link_append(directory = MORSE_COMPONENTS +
   '/middleware/socket_empty.blend/Object/', filename = 'Socket_Empty')
 bpy.data.objects['Socket_Empty'].location=(0,0,1)
 
-# XXX modify /middleware/ros_empty.blend logic properties (ROSClass / ros_mw)
+# Insert /middleware/ros_empty.blend logic properties (ROSClass / ros_mw)
 bpy.ops.wm.link_append(directory = MORSE_COMPONENTS + 
   '/middleware/ros_empty.blend/Object/', filename = 'ROS_Empty')
 bpy.data.objects['ROS_Empty'].location=(0,0,5)
 
 #bpy.ops.object.make_local(type = 'ALL')
 
+component_mw = {
+  "Gyroscope": ["ROS", "post_message"],
+  "Motion_Controller": ["ROS", "read_twist", 
+    "morse/middleware/ros/read_vw_twist"]
+}
+component_modifier = {}
+
 # modify component_config.py
 bpy.data.texts['component_config.py'].clear()
-bpy.data.texts['component_config.py'].write(
-  'component_mw = {\n' +
-  '  "Gyroscope": ["ROS", "post_message"],\n' +
-  '  "Motion_Controller": ["ROS", "read_twist", "morse/middleware/ros/read_vw_twist"]\n' +
-  '}\n' +
-  'component_modifier = {}' )
+bpy.data.texts['component_config.py'].write("component_mw = " + 
+  str(component_mw) )
+bpy.data.texts['component_config.py'].write("\n")
+bpy.data.texts['component_config.py'].write("component_modifier = " + 
+  str(component_modifier) )
+bpy.data.texts['component_config.py'].write("\n")
 
-
-#bpy.data.texts['component_config.py'].write(
-#  'component_mw = { "Gyroscope": ["ROS", "post_message"], "Motion_Controller": ["ROS", "read_message"] }\ncomponent_modifier = {}')
 
 #bpy.ops.view3d.game_start()
 
@@ -69,6 +73,7 @@ cf:
  - http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
  - http://www.blender.org/documentation/250PythonDoc/bpy.ops.object.html#bpy.ops.object.parent_set
  - http://www.blender.org/development/release-logs/blender-256-beta/data-access/
+ - http://www.blender.org/education-help/tutorials/game-engine/
  - http://wiki.blender.org/index.php/Extensions:2.5/Py/Scripts
  - http://wiki.blender.org/index.php/Robotics:Contents
  - http://vimeo.com/groups/blenderandrobotics
