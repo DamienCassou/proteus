@@ -1,18 +1,37 @@
 import bpy
 
-MORSE_DATA = '/home/pierrick/work/morse/data/morse'
-MORSE_COMPONENTS = MORSE_DATA + '/components'
+MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
+
+# map VirtualName -> (components_relative_path, files)
+
+MORSE_COMPONENTS_MAP = {
+  'ATRV': ('/robots/atrv.blend/Object/', [{'name':'ATRV'}, {'name':'Wheel.1'},
+    {'name':'Wheel.2'}, {'name':'Wheel.3'}, {'name':'Wheel.4'}]),
+  'Gyroscope': ('/sensors/morse_gyroscope.blend/Object/', [{'name':'Gyroscope'}, 
+    {'name':'Gyro_box'}]),
+  'GPS': ('/sensors/morse_GPS.blend/Object/', [{'name':'GPS'}, 
+    {'name':'GPS_box'}]),
+  'Odometry': ('/sensors/morse_odometry.blend/Object/', [{'name':'Odometry'}, 
+    {'name':'Odometry_mesh'}]),
+  'VW_Controller': ('/controllers/morse_vw_control.blend/Object/', 
+    [{'name':'Motion_Controller'}]),
+  'XYW_Controller': ('/controllers/morse_xyw_control.blend/Object/', 
+    [{'name':'Motion_Controller'}]),
+  'ROS': ('/middleware/ros_empty.blend/Object/', [{'name':'ROS_Empty'}]),
+  'Socket': ('/middleware/socket_empty.blend/Object/', [{'name':'Socket_Empty'}])
+}
 
 # morse.scripting
 class MorseObject(object):
-  # TODO static list of all objects ?
-  def __init__(self, directory, name, files=None):
-    self.name = name
-    if files != None:
-      bpy.ops.wm.link_append(directory=directory, files=files)
-    else:
-      bpy.ops.wm.link_append(directory=directory, filename=name)
-    self._blendobj = bpy.data.objects[name]
+  def __init__(self, vname):
+    blendata = MORSE_COMPONENTS_MAP[vname]
+    self.name = blendata[1][0]['name']
+    if vname in MORSE_COMPONENTS_MAP:
+      bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + blendata[0], 
+        files=blendata[1])
+    #else:
+    #  raise Exception('unknown name ' + name)
+    self._blendobj = bpy.data.objects[self.name]
   def append(self, obj):
     opsobj = bpy.ops.object
     opsobj.select_all(action = 'DESELECT')
@@ -27,40 +46,6 @@ class MorseObject(object):
   def location(self, value):
     self._blendobj.location = value
 
-class MorseRobot(MorseObject):
-  def __init__(self, name):
-    if name == "ATRV":
-      # Call the constructor of the parent class
-      super(self.__class__,self).__init__(MORSE_COMPONENTS + 
-        '/robots/atrv.blend/Object/', name, [{'name':'ATRV'}, {'name':'Wheel.1'},
-        {'name':'Wheel.2'}, {'name':'Wheel.3'}, {'name':'Wheel.4'}])
-
-class MorseSensor(MorseObject):
-  def __init__(self, name):
-    if name == "Gyroscope":
-      # Call the constructor of the parent class
-      super(self.__class__,self).__init__(MORSE_COMPONENTS + 
-        '/sensors/morse_gyroscope.blend/Object/', name, [{'name':'Gyroscope'}, 
-        {'name':'Gyro_box'}])
-
-class MorseActuator(MorseObject):
-  def __init__(self, name):
-    if name == "Motion_Controller":
-      # Call the constructor of the parent class
-      super(self.__class__,self).__init__(MORSE_COMPONENTS + 
-        '/controllers/morse_vw_control.blend/Object/', name)
-
-class MorseMiddleware(MorseObject):
-  def __init__(self, name):
-    if name == "ROS":
-      # Call the constructor of the parent class
-      super(self.__class__,self).__init__(MORSE_COMPONENTS + 
-        "/middleware/ros_empty.blend/Object/", "ROS_Empty")
-    elif name == "Socket":
-          # Call the constructor of the parent class
-      super(self.__class__,self).__init__(MORSE_COMPONENTS + 
-        "/middleware/socket_empty.blend/Object/", "Socket_Empty")
-
 class MorseSimulation(object):
   def __init__(self):
     self.comp_mw = {}
@@ -69,33 +54,33 @@ class MorseSimulation(object):
   def init(self):
     cfg = bpy.data.texts['component_config.py']
     cfg.clear()
-    cfg.write("component_mw = " + str(self.comp_mw) )
-    cfg.write("\n")
-    cfg.write("component_modifier = " + str(self.comp_mod) )
-    cfg.write("\n")
-    cfg.write("component_service = " + str(self.comp_srv) )
-    cfg.write("\n")
+    cfg.write('component_mw = ' + str(self.comp_mw) )
+    cfg.write('\n')
+    cfg.write('component_modifier = ' + str(self.comp_mod) )
+    cfg.write('\n')
+    cfg.write('component_service = ' + str(self.comp_srv) )
+    cfg.write('\n')
 
 
 # Test the API
 # http://www.openrobots.org/morse/doc/latest/user/tutorial.html
 # Add ATRV robot to the scene
-robot = MorseRobot("ATRV")
+robot = MorseObject('ATRV')
 # Link an actuator
-actuator = MorseActuator("Motion_Controller")
+actuator = MorseObject('VW_Controller')
 robot.append(actuator)
 # Link a Gyroscope sensor
-sensor = MorseSensor("Gyroscope")
+sensor = MorseObject('Gyroscope')
 robot.append(sensor)
 # Insert the middleware object
-mws = MorseMiddleware("Socket")
-mwr = MorseMiddleware("ROS")
+mws = MorseObject('Socket')
+mwr = MorseObject('ROS')
 sim = MorseSimulation()
 # Modify component_config.py
 sim.comp_mw = {
-  "Gyroscope": ["ROS", "post_message"],
-  "Motion_Controller": ["ROS", "read_twist", 
-    "morse/middleware/ros/read_vw_twist"]
+  'Gyroscope': ['ROS', 'post_message'],
+  'Motion_Controller': ['ROS', 'read_twist', 
+    'morse/middleware/ros/read_vw_twist']
 }
 sim.init()
 
