@@ -25,20 +25,23 @@ MORSE_COMPONENTS_MAP = {
 class MorseObject(object):
   def __init__(self, vname):
     blendata = MORSE_COMPONENTS_MAP[vname]
-    self.name = blendata[1][0]['name']
-    if vname in MORSE_COMPONENTS_MAP:
-      bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + blendata[0], 
-        files=blendata[1])
-    #else:
-    #  raise Exception('unknown name ' + name)
-    self._blendobj = bpy.data.objects[self.name]
+    oname = blendata[1][0]['name']
+    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + blendata[0], 
+      files=blendata[1])
+    bpy.ops.object.make_local()
+    self._blendobj = bpy.data.objects[oname]
   def append(self, obj):
     opsobj = bpy.ops.object
     opsobj.select_all(action = 'DESELECT')
     opsobj.select_name(name = obj.name)
-    opsobj.make_local()
     opsobj.select_name(name = self.name)
     opsobj.parent_set()
+  @property
+  def name(self):
+    return self._blendobj.name
+  @name.setter
+  def name(self, value):
+    self._blendobj.name = value
   @property
   def location(self):
     return self._blendobj.location
@@ -68,9 +71,11 @@ class MorseSimulation(object):
 robot = MorseObject('ATRV')
 # Link an actuator
 actuator = MorseObject('VW_Controller')
+actuator.location=(0,0,0.3)
 robot.append(actuator)
 # Link a Gyroscope sensor
 sensor = MorseObject('Gyroscope')
+sensor.location=(0,0,0.83)
 robot.append(sensor)
 # Insert the middleware object
 mws = MorseObject('Socket')
