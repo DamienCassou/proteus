@@ -2,8 +2,9 @@ import bpy
 
 MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
 
-# map VirtualName -> (components_relative_path, files)
-
+""" map VirtualName -> (components_relative_path, files)
+http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
+"""
 MORSE_COMPONENTS_MAP = {
   'ATRV': ('/robots/atrv.blend/Object/', [{'name':'ATRV'}, {'name':'Wheel.1'},
     {'name':'Wheel.2'}, {'name':'Wheel.3'}, {'name':'Wheel.4'}]),
@@ -22,7 +23,7 @@ MORSE_COMPONENTS_MAP = {
 }
 
 # morse.scripting
-class MorseObject(object):
+class MorseComponent(object):
   def __init__(self, vname):
     blendata = MORSE_COMPONENTS_MAP[vname]
     oname = blendata[1][0]['name']
@@ -68,18 +69,18 @@ class MorseSimulation(object):
 # Test the API
 # http://www.openrobots.org/morse/doc/latest/user/tutorial.html
 # Add ATRV robot to the scene
-robot = MorseObject('ATRV')
+robot = MorseComponent('ATRV')
 # Link an actuator
-actuator = MorseObject('VW_Controller')
+actuator = MorseComponent('VW_Controller')
 actuator.location=(0,0,0.3)
 robot.append(actuator)
 # Link a Gyroscope sensor
-sensor = MorseObject('Gyroscope')
+sensor = MorseComponent('Gyroscope')
 sensor.location=(0,0,0.83)
 robot.append(sensor)
 # Insert the middleware object
-mws = MorseObject('Socket')
-mwr = MorseObject('ROS')
+mws = MorseComponent('Socket')
+mwr = MorseComponent('ROS')
 sim = MorseSimulation()
 # Modify component_config.py
 sim.comp_mw = {
