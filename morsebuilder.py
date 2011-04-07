@@ -60,13 +60,17 @@ MORSE_COMPONENTS_MAP = {
 
 class Component(object):
   def __init__(self, category, name):
-    blendata = MORSE_COMPONENTS_MAP[category][name]
+    objlist = MORSE_COMPONENTS_MAP[category][name]
+    objname = objlist[0]['name'] # name of the main object
     objpath = os.path.join(MORSE_COMPONENTS, category, name + '.blend/Object/')
-    bpy.ops.wm.link_append(directory=objpath, files=blendata)
+    bpy.ops.wm.link_append(directory=objpath, files=objlist)
     bpy.ops.object.make_local()
-    oname = blendata[0]['name']
-    self._blendobj = bpy.data.objects[oname]
+    self._blendobj = bpy.data.objects[objname]
   def append(self, obj):
+    """ Add a child to the current object,
+    eg: robot.append(sensor), will set the robot parent of the sensor.
+    cf: bpy.ops.object.parent_set()
+    """
     opsobj = bpy.ops.object
     opsobj.select_all(action = 'DESELECT')
     opsobj.select_name(name = obj.name)
@@ -84,6 +88,8 @@ class Component(object):
   @location.setter
   def location(self, value):
     self._blendobj.location = value
+  def __str__(self):
+    return self.name
 
 class Robot(Component):
   def __init__(self, name):
@@ -119,31 +125,36 @@ class Config(object):
     cfg.write('\n')
     cfg.write('component_service = ' + str(self.service) )
     cfg.write('\n')
+  def link(self, component, mwmethod):
+    self.middleware[component.name] = mwmethod.config
+  def linktmp(self, component, mwmethod):
+    self.middleware[component.name] = mwmethod
 
 
 
 # Test the API
 # http://www.openrobots.org/morse/doc/latest/user/tutorial.html
 # Add ATRV robot to the scene
-robot = Robot('atrv')
+atrv = Robot('atrv')
 # Link an actuator
-actuator = Controller('morse_vw_control')
-actuator.location=(0,0,0.3)
-robot.append(actuator)
+motion = Controller('morse_vw_control')
+motion.location = (0, 0, 0.3)
+atrv.append(motion)
 # Link a Gyroscope sensor
-sensor = Sensor('morse_gyroscope')
-sensor.location=(0,0,0.83)
-robot.append(sensor)
+gyroscope = Sensor('morse_gyroscope')
+gyroscope.location = (0, 0, 0.83)
+atrv.append(gyroscope)
 # Insert the middleware object
-mws = Middleware('socket_empty')
-mwr = Middleware('ros_empty')
+socket = Middleware('socket_empty')
+ros = Middleware('ros_empty')
+
 conf = Config()
-# Modify component_config.py
-conf.middleware = {
-  'Gyroscope': ['ROS', 'post_message'],
-  'Motion_Controller': ['ROS', 'read_twist', 
-    'morse/middleware/ros/read_vw_twist']
-} # HOWTO hide/encapsulate this complexity ?
+# Associate each component to a middleware method
+# conf.link(gyroscope, morse.middleware.ros.post_message)
+# conf.link(motion, morse.middleware.ros.read_vw_twist)
+conf.linktmp(gyroscope, ['ROS', 'post_message'])
+conf.linktmp(motion, ['ROS', 'read_twist', 'morse/middleware/ros/read_vw_twist'])
+
 conf.init()
 
 
