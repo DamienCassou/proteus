@@ -4,9 +4,22 @@ MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
 
 """
 http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
+would be nice to be able to generate this map.
+TODO find way to list the objects from .blend file (*/*.blend/Object/*)
+for category in os.listdir(MORSE_COMPONENTS):
+  if category isdir
+    map[cat]={}
+    for file in os.listdir(MORSE_COMPONENTS + '/' + category):
+      # TODO 
+      if file endWith .blend
+        map[cat][file[:-6]] = blendObjectsList(file)
+
+###
+
+convention:
 {
-  'component_path': {
-    '.blend-file': ['Blender Object names']
+  'component-path': {
+    '.blend-file': [{'name':'main-object-name'}, {'name':'child1-name'}, ... ]
   }
 }
 """
@@ -32,12 +45,12 @@ MORSE_COMPONENTS_MAP = {
 
 # morse.scripting
 class Component(object):
-  def __init__(self, component_type, name):
-    blendata = MORSE_COMPONENTS_MAP[component_type][name]
-    oname = blendata[0]['name']
-    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + '/' + component_type + 
+  def __init__(self, category, name):
+    blendata = MORSE_COMPONENTS_MAP[category][name]
+    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + '/' + category + 
       '/' + name + '.blend/Object/', files=blendata)
     bpy.ops.object.make_local()
+    oname = blendata[0]['name']
     self._blendobj = bpy.data.objects[oname]
   def append(self, obj):
     opsobj = bpy.ops.object
@@ -78,19 +91,19 @@ class Middleware(Component):
     # Call the constructor of the parent class
     super(self.__class__,self).__init__('middleware', name)
 
-class Simulation(object):
+class Config(object):
   def __init__(self):
-    self.comp_mw = {}
-    self.comp_mod = {}
-    self.comp_srv = {}
+    self.middleware = {}
+    self.modifier = {}
+    self.service = {}
   def init(self):
     cfg = bpy.data.texts['component_config.py']
     cfg.clear()
-    cfg.write('component_mw = ' + str(self.comp_mw) )
+    cfg.write('component_mw = ' + str(self.middleware) )
     cfg.write('\n')
-    cfg.write('component_modifier = ' + str(self.comp_mod) )
+    cfg.write('component_modifier = ' + str(self.modifier) )
     cfg.write('\n')
-    cfg.write('component_service = ' + str(self.comp_srv) )
+    cfg.write('component_service = ' + str(self.service) )
     cfg.write('\n')
 
 
@@ -109,13 +122,13 @@ robot.append(sensor)
 # Insert the middleware object
 mws = Middleware('socket_empty')
 mwr = Middleware('ros_empty')
-sim = Simulation()
+conf = Config()
 # Modify component_config.py
-sim.comp_mw = {
+conf.middleware = {
   'Gyroscope': ['ROS', 'post_message'],
   'Motion_Controller': ['ROS', 'read_twist', 
     'morse/middleware/ros/read_vw_twist']
 }
-sim.init()
+conf.init()
 
 
