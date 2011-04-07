@@ -1,28 +1,43 @@
+import os
 import bpy
 
 MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
 
 """
-http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
-would be nice to be able to generate this map.
-TODO find way to list the objects from .blend file (*/*.blend/Object/*)
-for category in os.listdir(MORSE_COMPONENTS):
-  if category isdir
-    map[cat]={}
-    for file in os.listdir(MORSE_COMPONENTS + '/' + category):
-      # TODO 
-      if file endWith .blend
-        map[cat][file[:-6]] = blendObjectsList(file)
+would be nice to be able to generate the components map.
+TODO find a way to list the objects from .blend file (*/*.blend/Object/*)
 
-###
+def blendobjectslist(blend):
+  objects = []
+  fd = open(blend, 'r')
+  print(fd) # TODO list *.blend/Object/*
+  fd.close()
+  return objects # [{'name':'main-object-name'}, {'name':'child1-name'}, ...]
+
+def morsecomponents():
+  components = {}
+  for category in os.listdir(MORSE_COMPONENTS):
+    pathc = os.path.join(MORSE_COMPONENTS, category)
+    if os.path.isdir(pathc):
+      components[category] = {}
+      for blend in os.listdir(pathc):
+        pathb = os.path.join(pathc, blend)
+        if os.path.isfile(pathb) & blend.endswith('.blend'):
+          components[category][blend[:-6]] = blendObjectsList(pathb)
+  return components
+
+MORSE_COMPONENTS_MAP = morsecomponents()
 
 convention:
 {
-  'component-path': {
-    '.blend-file': [{'name':'main-object-name'}, {'name':'child1-name'}, ... ]
+  'component-directory': {
+    '.blend-file': [{'name':'main-object-name'}, {'name':'child1-name'}, ...]
   }
 }
+
+http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
 """
+
 MORSE_COMPONENTS_MAP = {
   'robots': {
     'atrv': [{'name':'ATRV'}, {'name':'Wheel.1'}, {'name':'Wheel.2'}, 
@@ -43,12 +58,11 @@ MORSE_COMPONENTS_MAP = {
   }
 }
 
-# morse.scripting
 class Component(object):
   def __init__(self, category, name):
     blendata = MORSE_COMPONENTS_MAP[category][name]
-    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + '/' + category + 
-      '/' + name + '.blend/Object/', files=blendata)
+    objpath = os.path.join(MORSE_COMPONENTS, category, name + '.blend/Object/')
+    bpy.ops.wm.link_append(directory=objpath, files=blendata)
     bpy.ops.object.make_local()
     oname = blendata[0]['name']
     self._blendobj = bpy.data.objects[oname]
@@ -107,6 +121,7 @@ class Config(object):
     cfg.write('\n')
 
 
+
 # Test the API
 # http://www.openrobots.org/morse/doc/latest/user/tutorial.html
 # Add ATRV robot to the scene
@@ -128,7 +143,8 @@ conf.middleware = {
   'Gyroscope': ['ROS', 'post_message'],
   'Motion_Controller': ['ROS', 'read_twist', 
     'morse/middleware/ros/read_vw_twist']
-}
+} # HOWTO hide/encapsulate this complexity ?
 conf.init()
+
 
 
