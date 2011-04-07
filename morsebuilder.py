@@ -2,33 +2,41 @@ import bpy
 
 MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
 
-""" map VirtualName -> (components_relative_path, files)
+"""
 http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
+{
+  'component_path': {
+    '.blend-file': ['Blender Object names']
+  }
+}
 """
 MORSE_COMPONENTS_MAP = {
-  'ATRV': ('/robots/atrv.blend/Object/', [{'name':'ATRV'}, {'name':'Wheel.1'},
-    {'name':'Wheel.2'}, {'name':'Wheel.3'}, {'name':'Wheel.4'}]),
-  'Gyroscope': ('/sensors/morse_gyroscope.blend/Object/', [{'name':'Gyroscope'}, 
-    {'name':'Gyro_box'}]),
-  'GPS': ('/sensors/morse_GPS.blend/Object/', [{'name':'GPS'}, 
-    {'name':'GPS_box'}]),
-  'Odometry': ('/sensors/morse_odometry.blend/Object/', [{'name':'Odometry'}, 
-    {'name':'Odometry_mesh'}]),
-  'VW_Controller': ('/controllers/morse_vw_control.blend/Object/', 
-    [{'name':'Motion_Controller'}]),
-  'XYW_Controller': ('/controllers/morse_xyw_control.blend/Object/', 
-    [{'name':'Motion_Controller'}]),
-  'ROS': ('/middleware/ros_empty.blend/Object/', [{'name':'ROS_Empty'}]),
-  'Socket': ('/middleware/socket_empty.blend/Object/', [{'name':'Socket_Empty'}])
+  'robots': {
+    'atrv': [{'name':'ATRV'}, {'name':'Wheel.1'}, {'name':'Wheel.2'}, 
+      {'name':'Wheel.3'}, {'name':'Wheel.4'}]
+  },
+  'sensors': {
+    'morse_gyroscope': [{'name':'Gyroscope'}, {'name':'Gyro_box'}],
+    'morse_GPS': [{'name':'GPS'}, {'name':'GPS_box'}],
+    'morse_odometry': [{'name':'Odometry'}, {'name':'Odometry_mesh'}]
+  },
+  'controllers': {
+    'morse_vw_control': [{'name':'Motion_Controller'}],
+    'morse_xyw_control': [{'name':'Motion_Controller'}]
+  },
+  'middleware': {
+    'ros_empty': [{'name':'ROS_Empty'}],
+    'socket_empty': [{'name':'Socket_Empty'}]
+  }
 }
 
 # morse.scripting
-class MorseComponent(object):
-  def __init__(self, vname):
-    blendata = MORSE_COMPONENTS_MAP[vname]
-    oname = blendata[1][0]['name']
-    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + blendata[0], 
-      files=blendata[1])
+class Component(object):
+  def __init__(self, component_type, name):
+    blendata = MORSE_COMPONENTS_MAP[component_type][name]
+    oname = blendata[0]['name']
+    bpy.ops.wm.link_append(directory=MORSE_COMPONENTS + '/' + component_type + 
+      '/' + name + '.blend/Object/', files=blendata)
     bpy.ops.object.make_local()
     self._blendobj = bpy.data.objects[oname]
   def append(self, obj):
@@ -50,7 +58,27 @@ class MorseComponent(object):
   def location(self, value):
     self._blendobj.location = value
 
-class MorseSimulation(object):
+class Robot(Component):
+  def __init__(self, name):
+    # Call the constructor of the parent class
+    super(self.__class__,self).__init__('robots', name)
+
+class Sensor(Component):
+  def __init__(self, name):
+    # Call the constructor of the parent class
+    super(self.__class__,self).__init__('sensors', name)
+
+class Controller(Component):
+  def __init__(self, name):
+    # Call the constructor of the parent class
+    super(self.__class__,self).__init__('controllers', name)
+
+class Middleware(Component):
+  def __init__(self, name):
+    # Call the constructor of the parent class
+    super(self.__class__,self).__init__('middleware', name)
+
+class Simulation(object):
   def __init__(self):
     self.comp_mw = {}
     self.comp_mod = {}
@@ -69,19 +97,19 @@ class MorseSimulation(object):
 # Test the API
 # http://www.openrobots.org/morse/doc/latest/user/tutorial.html
 # Add ATRV robot to the scene
-robot = MorseComponent('ATRV')
+robot = Robot('atrv')
 # Link an actuator
-actuator = MorseComponent('VW_Controller')
+actuator = Controller('morse_vw_control')
 actuator.location=(0,0,0.3)
 robot.append(actuator)
 # Link a Gyroscope sensor
-sensor = MorseComponent('Gyroscope')
+sensor = Sensor('morse_gyroscope')
 sensor.location=(0,0,0.83)
 robot.append(sensor)
 # Insert the middleware object
-mws = MorseComponent('Socket')
-mwr = MorseComponent('ROS')
-sim = MorseSimulation()
+mws = Middleware('socket_empty')
+mwr = Middleware('ros_empty')
+sim = Simulation()
 # Modify component_config.py
 sim.comp_mw = {
   'Gyroscope': ['ROS', 'post_message'],
