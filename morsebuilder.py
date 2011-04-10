@@ -1,41 +1,22 @@
 import os
 import bpy
+import json
 
 MORSE_COMPONENTS = '/usr/local/share/data/morse/components'
 
 """
 would be nice to be able to generate the components map.
 TODO find a way to list the objects from .blend file (*/*.blend/Object/*)
+http://webchat.freenode.net/?channels=blendercoders
+[18:35] <ideasman_42> pierriko, for this use: 
+http://www.blender.org/documentation/250PythonDoc/bpy.types.BlendDataLibraries.html#bpy.types.BlendDataLibraries.load
 
-def blendobjectslist(blend):
-  objects = []
-  fd = open(blend, 'r')
-  print(fd) # TODO list *.blend/Object/*
-  fd.close()
-  return objects # [{'name':'main-object-name'}, {'name':'child1-name'}, ...]
-
-def morsecomponents():
-  components = {}
-  for category in os.listdir(MORSE_COMPONENTS):
-    pathc = os.path.join(MORSE_COMPONENTS, category)
-    if os.path.isdir(pathc):
-      components[category] = {}
-      for blend in os.listdir(pathc):
-        pathb = os.path.join(pathc, blend)
-        if os.path.isfile(pathb) & blend.endswith('.blend'):
-          components[category][blend[:-6]] = blendObjectsList(pathb)
-  return components
-
-MORSE_COMPONENTS_MAP = morsecomponents()
-
-convention:
+map-convention:
 {
   'component-directory': {
     '.blend-file': [{'name':'main-object-name'}, {'name':'child1-name'}, ...]
   }
 }
-
-http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
 """
 
 MORSE_COMPONENTS_MAP = {
@@ -58,13 +39,48 @@ MORSE_COMPONENTS_MAP = {
   }
 }
 
+class ComponentsData(object):
+  def __init__(self, path):
+    self.path = path
+    self._data = {}
+    self._update()
+  def _update(self):
+    for category in os.listdir(self.path):
+      pathc = os.path.join(self.path, category)
+      if os.path.isdir(pathc):
+        self._data[category] = {}
+        for blend in os.listdir(pathc):
+          pathb = os.path.join(pathc, blend)
+          if os.path.isfile(pathb) & blend.endswith('.blend'):
+            self._data[category][blend[:-6]] = self.objects(pathb)
+  def objects(self, blend):
+    """ The problem is now that we don't respect the convention of the map: 
+    which is: [{'name':'main-object-name'}, {'name':'child1-name'}, ...] 
+    (in order to select the right object in Component class) 
+    then, bpy.data.libraries.load(path) is 2.57 OK , but 2.56 NOK!
+    """
+    objects = []
+    with bpy.data.libraries.load(blend) as (src, dest):
+      objects = [{'name':name} for name in src.objects]
+    return objects
+  def dump(self, dest):
+    fmap = open(dest, 'w')
+    json.dump(self.data, fmap, indent=1)
+    fmap.close()
+  @property
+  def data(self):
+    return self._data
+
+#components = ComponentsData(MORSE_COMPONENTS)
+#components.dump('/tmp/morse-components.py')
+
+# http://www.blender.org/documentation/250PythonDoc/bpy.ops.wm.html#bpy.ops.wm.link_append
 class Component(object):
   def __init__(self, category, name):
     objlist = MORSE_COMPONENTS_MAP[category][name]
     objname = objlist[0]['name'] # name of the main object
     objpath = os.path.join(MORSE_COMPONENTS, category, name + '.blend/Object/')
-    bpy.ops.wm.link_append(directory=objpath, files=objlist)
-    bpy.ops.object.make_local()
+    bpy.ops.wm.link_append(directory=objpath, link=False, files=objlist)
     self._blendobj = bpy.data.objects[objname]
   def append(self, obj):
     """ Add a child to the current object,
@@ -74,6 +90,7 @@ class Component(object):
     opsobj = bpy.ops.object
     opsobj.select_all(action = 'DESELECT')
     opsobj.select_name(name = obj.name)
+    bpy.ops.object.make_local()
     opsobj.select_name(name = self.name)
     opsobj.parent_set()
   @property
@@ -125,37 +142,9 @@ class Config(object):
     cfg.write('\n')
     cfg.write('component_service = ' + str(self.service) )
     cfg.write('\n')
-  def link(self, component, mwmethod):
+  def linkV2(self, component, mwmethod):
     self.middleware[component.name] = mwmethod.config
-  def linktmp(self, component, mwmethod):
-    self.middleware[component.name] = mwmethod
-
-
-
-# Test the API
-# http://www.openrobots.org/morse/doc/latest/user/tutorial.html
-# Add ATRV robot to the scene
-atrv = Robot('atrv')
-# Link an actuator
-motion = Controller('morse_vw_control')
-motion.location = (0, 0, 0.3)
-atrv.append(motion)
-# Link a Gyroscope sensor
-gyroscope = Sensor('morse_gyroscope')
-gyroscope.location = (0, 0, 0.83)
-atrv.append(gyroscope)
-# Insert the middleware object
-socket = Middleware('socket_empty')
-ros = Middleware('ros_empty')
-
-conf = Config()
-# Associate each component to a middleware method
-# conf.link(gyroscope, morse.middleware.ros.post_message)
-# conf.link(motion, morse.middleware.ros.read_vw_twist)
-conf.linktmp(gyroscope, ['ROS', 'post_message'])
-conf.linktmp(motion, ['ROS', 'read_twist', 'morse/middleware/ros/read_vw_twist'])
-
-conf.init()
-
+  def link(self, component, mwmethodcfg):
+    self.middleware[component.name] = mwmethodcfg
 
 
