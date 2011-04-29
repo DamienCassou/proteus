@@ -17,7 +17,7 @@ WORKING_DIR=`pwd`
 ### install script [draft]
 
 ## Dependencies
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev libpython3.1 python-yaml libyaml-dev 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev 
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
@@ -41,11 +41,15 @@ echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
 ## Morse http://www.openrobots.org/morse/doc/user/installation.html
 cd $WORKING_DIR
+#sudo apt-get install python3.2-dev # http://packages.ubuntu.com/natty/python3.2-dev
+#wget http://download.blender.org/release/Blender2.57/blender-2.57b-linux-glibc27-i686.tar.bz2
+#tar jxf blender-2.57b-linux-glibc27-i686.tar.bz2
+#echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.57b-linux-glibc27-i686/blender" >> ~/.bashrc
 wget http://download.blender.org/release/Blender2.56abeta/blender-2.56a-beta-linux-glibc27-i686.tar.bz2
 tar jxf blender-2.56a-beta-linux-glibc27-i686.tar.bz2
 echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender" >> ~/.bashrc
 . ~/.bashrc
-git clone https://github.com/laas/morse.git
+git clone https://github.com/pierriko/morse.git
 cd morse
 mkdir build && cd build
 cmake -DBUILD_ROS_SUPPORT=ON  .. 
