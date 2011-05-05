@@ -24,17 +24,16 @@ gps.translate(x=-0.3,z=0.83)
 atrv.append(gps)
 
 # Append a sick laser
-sick = Sick()
+sick = Sensor('morse_sick')
 sick.translate(x=0.18,z=0.94)
 atrv.append(sick)
-sick.resolution(value = 1)
+sick.properties(resolution = 1)
 
 # Append a camera
-cam = Camera()
+cam = Sensor('morse_camera')
 cam.translate(x=0.3,z=1.1)
 atrv.append(cam)
-cam.size(width = 128, height = 128)
-cam.rotate(y=-3.14)
+cam.properties(cam_width = 128, cam_height = 128)
 
 # Insert the middleware object
 ros = Middleware('ros_empty')
