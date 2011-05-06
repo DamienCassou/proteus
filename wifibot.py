@@ -18,10 +18,11 @@ proximity = Sensor('morse_proximity')
 proximity.translate(x=-0.2, z=0.83)
 atrv.append(proximity)
 
-# Append a GPS sensor
-gps = Sensor('morse_GPS')
-gps.translate(x=-0.3,z=0.83)
-atrv.append(gps)
+# Append a Pose sensor (GPS + Gyroscope)
+#gps = Sensor('morse_GPS')
+pose = Sensor('morse_pose')
+pose.translate(x=0.2,z=0.83)
+atrv.append(pose)
 
 # Append a sick laser
 sick = Sensor('morse_sick')
@@ -42,7 +43,7 @@ ros = Middleware('ros_empty')
 ros.configure(motion)
 ros.configure(odometry)
 ros.configure(proximity)
-ros.configure(gps)
+ros.configure(pose)
 ros.configure(sick)
 ros.configure(cam)
 

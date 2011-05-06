@@ -59,6 +59,7 @@ echo "Morse built, do 'morse check' to check"
 # Morse/ROS integration
 # http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html
 # PyYAML
+# sudo apt-get install python3-yaml # 11.04 (natty)
 cd $WORKING_DIR
 wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz
 tar zxf PyYAML-3.09.tar.gz
