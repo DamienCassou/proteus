@@ -32,6 +32,7 @@ cd orocos_toolchain_ros
 git checkout -b diamondback origin/diamondback
 git submodule init
 git submodule update --recursive
+#git submodule foreach 'git fetch'
 echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> ~/.bashrc
 . ~/.bashrc
 rosmake orocos_toolchain_ros
