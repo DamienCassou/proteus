@@ -22,8 +22,8 @@ sudo apt-get install build-essential g++ cmake python-setuptools wget subversion
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
 rosinstall $WORKING_DIR/ros "http://packages.ros.org/cgi-bin/gen_rosinstall.py?rosdistro=diamondback&variant=desktop-full&overlay=no"
-echo "source $WORKING_DIR/ros/setup.bash" >> ~/.bashrc
-. ~/.bashrc
+echo "source $WORKING_DIR/ros/setup.bash" >> $WORKING_DIR/setup.sh
+. $WORKING_DIR/setup.sh
 
 ## Orocos http://www.ros.org/wiki/orocos_toolchain_ros
 cd $WORKING_DIR/ros
@@ -32,11 +32,11 @@ cd orocos_toolchain_ros
 git checkout -b diamondback origin/diamondback
 git submodule init
 git submodule update --recursive
-echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> ~/.bashrc
-. ~/.bashrc
+echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> $WORKING_DIR/setup.sh
+. $WORKING_DIR/setup.sh
 rosmake orocos_toolchain_ros
-echo "source $WORKING_DIR/orocos_toolchain_ros/env.sh" >> ~/.bashrc
-. ~/.bashrc
+echo "source $WORKING_DIR/orocos_toolchain_ros/env.sh" >> $WORKING_DIR/setup.sh
+. $WORKING_DIR/setup.sh
 echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
 ## Morse http://www.openrobots.org/morse/doc/user/installation.html
@@ -44,11 +44,11 @@ cd $WORKING_DIR
 #sudo apt-get install python3.2-dev # http://packages.ubuntu.com/natty/python3.2-dev
 #wget http://download.blender.org/release/Blender2.57/blender-2.57b-linux-glibc27-i686.tar.bz2
 #tar jxf blender-2.57b-linux-glibc27-i686.tar.bz2
-#echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.57b-linux-glibc27-i686/blender" >> ~/.bashrc
+#echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.57b-linux-glibc27-i686/blender" >> $WORKING_DIR/setup.sh
 wget http://download.blender.org/release/Blender2.56abeta/blender-2.56a-beta-linux-glibc27-i686.tar.bz2
 tar jxf blender-2.56a-beta-linux-glibc27-i686.tar.bz2
-echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender" >> ~/.bashrc
-. ~/.bashrc
+echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender" >> $WORKING_DIR/setup.sh
+. $WORKING_DIR/setup.sh
 git clone https://github.com/pierriko/morse.git
 cd morse
 mkdir build && cd build
@@ -72,8 +72,8 @@ echo "( http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_inst
 cd $WORKING_DIR
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
 rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
-echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> ~/.bashrc
-. ~/.bashrc
+echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> $WORKING_DIR/setup.sh
+. $WORKING_DIR/setup.sh
 
 echo "getting our Python script"
 wget https://github.com/pierriko/proteus/raw/master/proteus.py
