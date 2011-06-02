@@ -35,7 +35,7 @@ git submodule update --recursive
 echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> ~/.bashrc
 . ~/.bashrc
 rosmake orocos_toolchain_ros
-echo "source $WORKING_DIR/orocos_toolchain_ros/env.sh" >> ~/.bashrc
+echo "source $WORKING_DIR/ros/orocos_toolchain_ros/env.sh" >> ~/.bashrc
 . ~/.bashrc
 echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
