@@ -3,18 +3,17 @@
 #
 #                             PROTEUS
 #
-# HOWTO
+# HOWTO install ROS / OROCOS / MORSE [draft]
+#
 # cd ~/workspace 
 # wget https://github.com/pierriko/proteus/raw/master/install.sh
 # sh install.sh
 #
+# This script targets Ubuntu lucid i386 (10.04LTS)
+#
 ###############################################################################
 
 WORKING_DIR=`pwd`
-
-###
-### ROS / OROCOS / MORSE 
-### install script [draft]
 
 ## Dependencies ( 'git-core' because 'git' doesnt exists for lucid )
 sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev rubygems doxygen 
@@ -40,7 +39,7 @@ echo "source $WORKING_DIR/ros/orocos_toolchain_ros/env.sh" >> $WORKING_DIR/setup
 . $WORKING_DIR/setup.sh
 echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
-## Morse http://www.openrobots.org/morse/doc/user/installation.html
+## Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
 #sudo apt-get install python3.2-dev # http://packages.ubuntu.com/natty/python3.2-dev
 #wget http://download.blender.org/release/Blender2.57/blender-2.57b-linux-glibc27-i686.tar.bz2
@@ -58,9 +57,8 @@ sudo make install
 echo "Morse built, do 'morse check' to check"
 
 # Morse/ROS integration
-# http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html
 # PyYAML
-# sudo apt-get install python3-yaml # 11.04 (natty)
+# sudo apt-get install python3-yaml # if >= maverick (10.10)
 cd $WORKING_DIR
 wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz
 tar zxf PyYAML-3.09.tar.gz
@@ -68,7 +66,7 @@ cd PyYAML-3.09
 sudo python3.1 setup.py install
 
 echo "ROS-Py3 : patch ROS for a Python 3 support"
-echo "( http://www.openrobots.org/morse/doc/latest/user/middlewares/ros/ros_installation.html )"
+echo "( http://www.openrobots.org/morse/doc/stable/user/installation.html#ros )"
 # ROS-Py3
 cd $WORKING_DIR
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
@@ -79,6 +77,7 @@ echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> $W
 echo "getting our Python script"
 wget https://github.com/pierriko/proteus/raw/master/proteus.py
 
+echo "following is experimental (!)"
 echo "morse_ros ( https://github.com/kargm/morse_ros ) continue? [y,N]"
 read TEST
 if [ "$TEST" = "y" ]; then
