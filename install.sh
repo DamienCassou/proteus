@@ -17,7 +17,8 @@ WORKING_DIR=`pwd`
 ### install script [draft]
 
 ## Dependencies
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git mercurial python3.1-dev python-yaml libyaml-dev rubygems1.8 doxygen 
+sudo apt-get install libxerces-c-dev libomniorb4-dev antlr libglut3-dev libomniorb4-1 libreadline-dev graphviz libantlr-dev libomnithread3c2 libxslt1-dev omniorb4-nameserver libomnithread3-dev omniorb4 omniidl4 liblua5.1-0-dev
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
