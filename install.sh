@@ -20,38 +20,59 @@ sudo apt-get install build-essential g++ cmake python-setuptools wget subversion
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
+if [ ! -d ros ]; then
+  echo "source $WORKING_DIR/ros/setup.bash" >> $WORKING_DIR/setup.sh
+fi
 rosinstall $WORKING_DIR/ros "http://packages.ros.org/cgi-bin/gen_rosinstall.py?rosdistro=diamondback&variant=desktop-full&overlay=no"
-echo "source $WORKING_DIR/ros/setup.bash" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
 
 ## Orocos http://www.ros.org/wiki/orocos_toolchain_ros
 cd $WORKING_DIR/ros
-git clone http://git.mech.kuleuven.be/robotics/orocos_toolchain_ros.git
-cd orocos_toolchain_ros
-git checkout -b diamondback origin/diamondback
-git submodule init
-git submodule update --recursive
-# (?) for update: git pull && git submodule foreach 'git pull'
-echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> $WORKING_DIR/setup.sh
-. $WORKING_DIR/setup.sh
+if [ ! -d orocos_toolchain_ros ]; then
+  git clone http://git.mech.kuleuven.be/robotics/orocos_toolchain_ros.git
+  cd orocos_toolchain_ros
+  git checkout -b diamondback origin/diamondback
+  git submodule init
+  git submodule update --recursive
+  echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> $WORKING_DIR/setup.sh
+  . $WORKING_DIR/setup.sh
+  echo "source $WORKING_DIR/ros/orocos_toolchain_ros/env.sh" >> $WORKING_DIR/setup.sh
+  # (?) echo "export ORBInitRef='NameService=corbaname::localhost'" >> $WORKING_DIR/setup.sh
+else
+  cd orocos_toolchain_ros
+  git pull && git submodule foreach git pull
+fi
 rosmake --rosdep-install orocos_toolchain_ros
-echo "source $WORKING_DIR/ros/orocos_toolchain_ros/env.sh" >> $WORKING_DIR/setup.sh
-# (?) echo "export ORBInitRef='NameService=corbaname::localhost'" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
 echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
 ## Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
+#
 #sudo apt-get install python3.2-dev # http://packages.ubuntu.com/natty/python3.2-dev
 #wget http://download.blender.org/release/Blender2.57/blender-2.57b-linux-glibc27-i686.tar.bz2
 #tar jxf blender-2.57b-linux-glibc27-i686.tar.bz2
 #echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.57b-linux-glibc27-i686/blender" >> $WORKING_DIR/setup.sh
-wget http://download.blender.org/release/Blender2.56abeta/blender-2.56a-beta-linux-glibc27-i686.tar.bz2
-tar jxf blender-2.56a-beta-linux-glibc27-i686.tar.bz2
-echo "export MORSE_BLENDER=$WORKING_DIR/blender-2.56a-beta-linux-glibc27-i686/blender" >> $WORKING_DIR/setup.sh
+#
+BLENDER=blender-2.56a-beta-linux-glibc27-i686
+if [ ! -d $BLENDER ]; then
+  if [ ! -f $BLENDER.tar.bz2 ]; then
+    wget http://download.blender.org/release/Blender2.56abeta/$BLENDER.tar.bz2
+  fi
+  tar jxf $BLENDER.tar.bz2
+fi
+echo "export MORSE_BLENDER=$WORKING_DIR/$BLENDER/blender" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
-git clone https://github.com/pierriko/morse.git
-cd morse
+if [ ! -d morse ]; then
+  git clone https://github.com/pierriko/morse.git
+  cd morse
+else
+  cd morse
+  git pull # origin master
+  if [ -d build ]; then
+    mv build build.`date +%s`
+  fi
+fi
 mkdir build && cd build
 cmake -DBUILD_ROS_SUPPORT=ON  .. 
 sudo make install
@@ -61,19 +82,26 @@ echo "Morse built, do 'morse check' to check"
 # PyYAML
 # sudo apt-get install python3-yaml # if >= maverick (10.10)
 cd $WORKING_DIR
-wget http://pyyaml.org/download/pyyaml/PyYAML-3.09.tar.gz
-tar zxf PyYAML-3.09.tar.gz
-cd PyYAML-3.09
-sudo python3.1 setup.py install
+PYYAML=PyYAML-3.09
+if [ ! -d $PYYAML ]; then
+  if [ ! -f $PYYAML.tar.gz ]; then
+    wget http://pyyaml.org/download/pyyaml/$PYYAML.tar.gz
+  fi
+  tar zxf $PYYAML.tar.gz
+  cd $PYYAML
+  sudo python3.1 setup.py install
+fi
 
 echo "ROS-Py3 : patch ROS for a Python 3 support"
 echo "( http://www.openrobots.org/morse/doc/stable/user/installation.html#ros )"
 # ROS-Py3
 cd $WORKING_DIR
+if [ ! -d ros-py3 ]; then
+  echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> $WORKING_DIR/setup.sh
+  echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
+fi
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
 rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
-echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> $WORKING_DIR/setup.sh
-echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
 
 echo "following is experimental (!)"
