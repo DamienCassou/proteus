@@ -15,8 +15,10 @@
 
 WORKING_DIR=`pwd`
 
+sudo apt-get update
 ## Dependencies ( 'git-core' because 'git' doesnt exists for lucid )
 sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev rubygems doxygen 
+#sudo apt-get upgrade
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source
 sudo easy_install -U rosinstall
@@ -60,9 +62,9 @@ if [ ! -d $BLENDER ]; then
     wget http://download.blender.org/release/Blender2.56abeta/$BLENDER.tar.bz2
   fi
   tar jxf $BLENDER.tar.bz2
+  echo "export MORSE_BLENDER=$WORKING_DIR/$BLENDER/blender" >> $WORKING_DIR/setup.sh
+  . $WORKING_DIR/setup.sh
 fi
-echo "export MORSE_BLENDER=$WORKING_DIR/$BLENDER/blender" >> $WORKING_DIR/setup.sh
-. $WORKING_DIR/setup.sh
 if [ ! -d morse ]; then
   git clone https://github.com/pierriko/morse.git
   cd morse
