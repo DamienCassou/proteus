@@ -31,11 +31,12 @@ cd orocos_toolchain_ros
 git checkout -b diamondback origin/diamondback
 git submodule init
 git submodule update --recursive
-#git submodule foreach 'git fetch'
+# (?) for update: git pull && git submodule foreach 'git pull'
 echo "export ROS_PACKAGE_PATH=$WORKING_DIR/ros/orocos_toolchain_ros:\$ROS_PACKAGE_PATH" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
-rosmake orocos_toolchain_ros
+rosmake --rosdep-install orocos_toolchain_ros
 echo "source $WORKING_DIR/ros/orocos_toolchain_ros/env.sh" >> $WORKING_DIR/setup.sh
+# (?) echo "export ORBInitRef='NameService=corbaname::localhost'" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
 echo "Orocos built, do 'rosrun ocl deployer-gnulinux' to check"
 
@@ -72,10 +73,8 @@ cd $WORKING_DIR
 rosinstall $WORKING_DIR/ros-py3 $WORKING_DIR/ros http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall
 rosmake ros &&  rosmake ros_comm &&  rosmake common_msgs
 echo "export PYTHONPATH=$WORKING_DIR/ros/ros/core/roslib/src:\$PYTHONPATH" >> $WORKING_DIR/setup.sh
+echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
 . $WORKING_DIR/setup.sh
-
-echo "getting our Python script"
-wget https://github.com/pierriko/proteus/raw/master/proteus.py
 
 echo "following is experimental (!)"
 echo "morse_ros ( https://github.com/kargm/morse_ros ) continue? [y,N]"
