@@ -72,8 +72,8 @@ if [ ! -d ros-py3 ]; then
 fi
 
 sudo easy_install -U rosinstall
-rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall https://github.com/pierriko/proteus/raw/master/rosjava.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
-rosmake ros &&  rosmake ros_comm && rosmake common_msgs && rosmake client_rosjava
+rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
+rosmake ros &&  rosmake ros_comm && rosmake common_msgs
 . $WORKING_DIR/setup.sh
 
 echo "Android SDK : still needed for http://rosjava.googlecode.com "
@@ -101,5 +101,5 @@ echo "roscd rosjava"
 echo "ant dist"
 echo
 echo
-echo "done!"
+apt-get moo
 
