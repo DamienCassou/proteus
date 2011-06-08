@@ -33,6 +33,7 @@ else
     mv build build.`date +%s`
   fi
 fi
+# TODO wait $! # $! as PID of `apt-get install &` (pb with sudo)
 mkdir build && cd build
 cmake -DBUILD_ROS_SUPPORT=ON  .. 
 sudo make install
