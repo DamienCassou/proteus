@@ -70,7 +70,21 @@ if [ ! -d ros-py3 ]; then
   echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
 fi
 sudo easy_install -U rosinstall
-rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall https://github.com/pierriko/proteus/raw/master/rosjava.rosinstall
+rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall https://github.com/pierriko/proteus/raw/master/rosjava.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
 rosmake ros &&  rosmake ros_comm && rosmake common_msgs && rosmake client_rosjava
 . $WORKING_DIR/setup.sh
+
+echo "Android SDK : still needed for http://rosjava.googlecode.com "
+echo "( http://developer.android.com/sdk )"
+# 
+cd $WORKING_DIR
+if [ ! -d android-sdk-linux_x86 ]; then
+  if [ ! -f android-sdk_r11-linux_x86.tgz ]; then
+    wget http://dl.google.com/android/android-sdk_r11-linux_x86.tgz
+  fi
+  tar zxf android-sdk_r11-linux_x86.tgz
+  ./android-sdk-linux_x86/tools/android &
+fi
+
+echo "done!"
 
