@@ -1,0 +1,4 @@
+- git:
+    local-name: client_rosjava
+    uri: http://code.in.tum.de/git/client-rosjava.git
+    version: diamondback_released

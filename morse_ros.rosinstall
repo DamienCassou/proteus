@@ -1,0 +1,4 @@
+- git:
+    local-name: morse_ros
+    uri: https://github.com/kargm/morse_ros.git
+    version: master

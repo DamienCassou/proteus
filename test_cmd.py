@@ -8,7 +8,7 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
 def handle_sick(msg):
-    mid = len(msg.ranges) / 2
+    mid = len(msg.ranges) // 2
     cmd = Twist()
     # halt if an object is less than 2m in a 30deg angle
     halt=False
@@ -17,7 +17,6 @@ def handle_sick(msg):
             halt=True
             break
     if halt:
-        cmd.linear.x = 0
         # we go to the highest-range side scanned
         if sum(msg.ranges[:mid]) > sum(msg.ranges[mid:]):
             cmd.angular.z = -1
@@ -35,6 +34,5 @@ if __name__ == '__main__':
     rospy.init_node('test_cmd')
     topic=rospy.Publisher('/ATRV/Motion_Controller', Twist)
     rospy.Subscriber('/ATRV/Sick', LaserScan, handle_sick)
-    while not rospy.is_shutdown():
-        rospy.sleep(1.)
+    rospy.spin()
 

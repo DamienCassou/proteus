@@ -13,11 +13,15 @@
 #
 ###############################################################################
 
+#sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu lucid main" > /etc/apt/sources.list.d/ros-latest.list'
+#wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+#sudo apt-get install ros-diamondback-desktop-full ros-diamondback-orocos-toolchain-ros 
+
 WORKING_DIR=`pwd`
 
 sudo apt-get update
 ## Dependencies ( 'git-core' because 'git' doesnt exists for lucid )
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev rubygems doxygen 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen 
 #sudo apt-get upgrade
 
 ## ROS http://www.ros.org/wiki/diamondback/Installation/Ubuntu/Source

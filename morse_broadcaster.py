@@ -20,7 +20,6 @@ if __name__ == '__main__':
     rospy.init_node('morse_broadcaster')
     rospy.Subscriber('/ATRV/Pose_sensor', Odometry, handle_pose)
     br = tf.TransformBroadcaster()
-    rate = rospy.Rate(10.0)
 
     while not rospy.is_shutdown():
         br.sendTransform((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0),
@@ -31,6 +30,6 @@ if __name__ == '__main__':
                      rospy.Time.now(),
                      "/odom",
                      "/base_link")
-        rate.sleep()
+        rospy.sleep(1.)
 
 
