@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Morse & ROS install (Python 3.1)
+# Morse & ROS & rosjava (Android) install (Python 3.1)
 # Ubuntu Lucid (10.04 i386)
 #
 
@@ -14,7 +14,7 @@ if [ ! -d /opt/ros/diamondback ]; then
   echo "#!/bin/sh" > $WORKING_DIR/setup.sh
   echo "source /opt/ros/diamondback/ros/setup.bash" >> $WORKING_DIR/setup.sh
 fi
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full ant 
 
 ## Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
@@ -89,16 +89,14 @@ if [ ! -d android-sdk-linux_x86 ]; then
   echo "  [*] Android SDK Platform-tools, revision 5"
   echo "  [*] SDK Platform Android 2.3.3, API 10"
   for prop in `find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties"`; do
-    echo "sdk.dir=$WORKING_DIR/android-sdk-linux_x86" >> $prop; echo -n "."
+    echo "sdk.dir=$WORKING_DIR/android-sdk-linux_x86" >> $prop
   done
   echo "(*) please edit target=android-10"
   find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties" | xargs gedit &
 fi
 
 echo "(*) once you installed the SDK through the android tool, execute:"
-echo "source $WORKING_DIR/setup.sh"
-echo "roscd rosjava"
-echo "ant dist"
+echo "source $WORKING_DIR/setup.sh && roscd rosjava && ant dist"
 echo
 echo
 apt-get moo
