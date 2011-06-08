@@ -14,7 +14,7 @@ if [ ! -d /opt/ros/diamondback ]; then
   echo "#!/bin/sh" > $WORKING_DIR/setup.sh
   echo "source /opt/ros/diamondback/ros/setup.bash" >> $WORKING_DIR/setup.sh
 fi
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full ros-diamondback-orocos-toolchain-ros 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full 
 
 ## Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
