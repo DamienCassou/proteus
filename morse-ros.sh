@@ -68,7 +68,9 @@ echo "( http://www.openrobots.org/morse/doc/stable/user/installation.html#ros )"
 cd $WORKING_DIR
 if [ ! -d ros-py3 ]; then
   echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
+  echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk" >> $WORKING_DIR/setup.sh
 fi
+
 sudo easy_install -U rosinstall
 rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall https://github.com/pierriko/proteus/raw/master/rosjava.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
 rosmake ros &&  rosmake ros_comm && rosmake common_msgs && rosmake client_rosjava
@@ -76,7 +78,6 @@ rosmake ros &&  rosmake ros_comm && rosmake common_msgs && rosmake client_rosjav
 
 echo "Android SDK : still needed for http://rosjava.googlecode.com "
 echo "( http://developer.android.com/sdk )"
-# 
 cd $WORKING_DIR
 if [ ! -d android-sdk-linux_x86 ]; then
   if [ ! -f android-sdk_r11-linux_x86.tgz ]; then
@@ -84,7 +85,21 @@ if [ ! -d android-sdk-linux_x86 ]; then
   fi
   tar zxf android-sdk_r11-linux_x86.tgz
   ./android-sdk-linux_x86/tools/android &
+  echo "(*) please install: "
+  echo "  [*] Android SDK Platform-tools, revision 5"
+  echo "  [*] SDK Platform Android 2.3.3, API 10"
+  for prop in `find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties"`; do
+    echo "sdk.dir=$WORKING_DIR/android-sdk-linux_x86" >> $prop; echo -n "."
+  done
+  echo "(*) please edit target=android-10"
+  find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties" | xargs gedit &
 fi
 
+echo "(*) once you installed the SDK through the android tool, execute:"
+echo "source $WORKING_DIR/setup.sh"
+echo "roscd rosjava"
+echo "ant dist"
+echo
+echo
 echo "done!"
 
