@@ -63,7 +63,7 @@ fi
 sudo easy_install -U rosinstall
 rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
 . $WORKING_DIR/setup.sh
-rosmake ros &&  rosmake ros_comm && rosmake common_msgs
+rosmake ros &&  rosmake ros_comm && rosmake common_msgs sensor_msgs geometry_msgs 
 
 # bugfix hg doesnt stock empty dir
 mkdir $WORKING_DIR/ros-py3/rosjava/android/library/libs/
