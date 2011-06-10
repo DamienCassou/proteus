@@ -13,9 +13,10 @@ import org.ros.message.geometry_msgs.Twist;
 
 public class Proteus implements NodeMain {
 
+  private Node node;
+
   @Override
   public void main(NodeConfiguration configuration) {
-    Node node = null;
     try {
       node = new Node("test_cmd", configuration);
       final Publisher<Twist> publisher =
@@ -62,4 +63,11 @@ public class Proteus implements NodeMain {
       }
     }
   }
+
+  @Override
+  public void shutdown() {
+    node.shutdown();
+    node = null;
+  }
+
 }

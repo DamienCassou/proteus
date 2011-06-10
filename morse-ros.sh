@@ -57,17 +57,17 @@ echo "ROS-Py3 : patch ROS for a Python 3 support"
 echo "( http://www.openrobots.org/morse/doc/stable/user/installation.html#ros )"
 # ROS-Py3
 cd $WORKING_DIR
-if [ ! -d ros-py3 ]; then
-  echo "source $WORKING_DIR/ros-py3/setup.bash" >> $WORKING_DIR/setup.sh
+if [ ! -d ros-addons ]; then
+  echo "source $WORKING_DIR/ros-addons/setup.bash" >> $WORKING_DIR/setup.sh
 fi
 
 sudo easy_install -U rosinstall
-rosinstall $WORKING_DIR/ros-py3 /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
+rosinstall $WORKING_DIR/ros-addons /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
 . $WORKING_DIR/setup.sh
 rosmake ros &&  rosmake ros_comm && rosmake common_msgs sensor_msgs geometry_msgs 
 
 # bugfix hg doesnt stock empty dir
-mkdir $WORKING_DIR/ros-py3/rosjava/android/library/libs/
+mkdir $WORKING_DIR/ros-addons/rosjava/android/library/libs/
 
 echo "Android SDK : still needed for http://rosjava.googlecode.com "
 echo "( http://developer.android.com/sdk )"
@@ -81,11 +81,11 @@ if [ ! -d android-sdk-linux_x86 ]; then
   echo "(*) please install: "
   echo "  [*] Android SDK Platform-tools, revision 5"
   echo "  [*] SDK Platform Android 2.3.3, API 10"
-  for prop in `find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties"`; do
+  for prop in `find $WORKING_DIR/ros-addons/rosjava/android/ -name "default.properties"`; do
     echo "sdk.dir=$WORKING_DIR/android-sdk-linux_x86" >> $prop
   done
   echo "(*) please edit target=android-10"
-  find $WORKING_DIR/ros-py3/rosjava/android/ -name "default.properties" | xargs gedit &
+  find $WORKING_DIR/ros-addons/rosjava/android/ -name "default.properties" | xargs gedit &
   echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk" >> $WORKING_DIR/setup.sh
 fi
 
