@@ -1,5 +1,6 @@
 package org.ros.tutorials.pubsub;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.logging.Log;
 import org.ros.MessageListener;
 import org.ros.Node;
@@ -17,12 +18,15 @@ public class Proteus implements NodeMain {
 
   @Override
   public void main(NodeConfiguration configuration) {
+    Preconditions.checkState(node == null);
+    Preconditions.checkNotNull(configuration);
     try {
-      node = new Node("test_cmd", configuration);
+      node = new Node("laser_cmd", configuration);
       final Publisher<Twist> publisher =
           node.createPublisher("/ATRV/Motion_Controller", Twist.class);
 
       final Log log = node.getLog();
+      log.info("init");
       node.createSubscriber("/ATRV/Sick", new MessageListener<LaserScan>() {
         @Override
         public void onNewMessage(LaserScan msg) {
@@ -55,6 +59,7 @@ public class Proteus implements NodeMain {
           publisher.publish(cmd);
         }
       }, LaserScan.class);
+      log.info("done");
     } catch (Exception e) {
       if (node != null) {
         node.getLog().fatal(e);
@@ -64,10 +69,11 @@ public class Proteus implements NodeMain {
     }
   }
 
-//  @Override
-//  public void shutdown() {
-//    node.shutdown();
-//    node = null;
-//  }
+  @Override
+  public void shutdown() {
+    node.shutdown();
+    node = null;
+  }
 
 }
+

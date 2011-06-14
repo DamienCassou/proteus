@@ -67,10 +67,7 @@ rosinstall $WORKING_DIR/ros-addons /opt/ros/diamondback http://ias.cs.tum.edu/~k
 rosmake ros ros_comm common_msgs sensor_msgs geometry_msgs 
 
 # bugfix hg doesnt stock empty dir
-cd $WORKING_DIR/ros-addons/rosjava
-mkdir android/library/libs
-# XXX bug with adresse in latest hg
-hg up -d 2011-06-08
+mkdir $WORKING_DIR/ros-addons/rosjava/android/library/libs
 
 echo "Android SDK : still needed for http://rosjava.googlecode.com "
 echo "( http://developer.android.com/sdk )"
