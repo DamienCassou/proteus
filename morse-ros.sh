@@ -10,7 +10,7 @@ WORKING_DIR=`pwd`
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu lucid main" > /etc/apt/sources.list.d/ros-latest.list'
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full openjdk-6-jdk ant1.8 libdnsjava-java 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full openjdk-6-jdk ant1.8 
 
 # Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
@@ -64,10 +64,13 @@ fi
 sudo easy_install -U rosinstall
 rosinstall $WORKING_DIR/ros-addons /opt/ros/diamondback http://ias.cs.tum.edu/~kargm/ros_py3.rosinstall http://rosjava.googlecode.com/hg/rosjava.rosinstall
 . $WORKING_DIR/setup.sh
-rosmake ros &&  rosmake ros_comm && rosmake common_msgs sensor_msgs geometry_msgs 
+rosmake ros ros_comm common_msgs sensor_msgs geometry_msgs 
 
 # bugfix hg doesnt stock empty dir
-mkdir $WORKING_DIR/ros-addons/rosjava/android/library/libs/
+cd $WORKING_DIR/ros-addons/rosjava
+mkdir android/library/libs
+# XXX bug with adresse in latest hg
+hg up -d 2011-06-08
 
 echo "Android SDK : still needed for http://rosjava.googlecode.com "
 echo "( http://developer.android.com/sdk )"
