@@ -64,10 +64,10 @@ public class Proteus implements NodeMain {
     }
   }
 
-  @Override
-  public void shutdown() {
-    node.shutdown();
-    node = null;
-  }
+//  @Override
+//  public void shutdown() {
+//    node.shutdown();
+//    node = null;
+//  }
 
 }
