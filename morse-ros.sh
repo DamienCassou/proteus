@@ -7,10 +7,18 @@
 
 WORKING_DIR=`pwd`
 
+echo "========================================"
+echo "            Install ROS"
+echo "========================================"
+
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu lucid main" > /etc/apt/sources.list.d/ros-latest.list'
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full openjdk-6-jdk ant1.8 
+
+echo "========================================"
+echo "            Install Blender"
+echo "========================================"
 
 # Morse http://www.openrobots.org/morse/doc/stable/user/installation.html
 cd $WORKING_DIR
@@ -23,6 +31,11 @@ if [ ! -d $BLENDER ]; then
   echo "export MORSE_BLENDER=$WORKING_DIR/$BLENDER/blender" >> $WORKING_DIR/setup.sh
   . $WORKING_DIR/setup.sh
 fi
+
+echo "========================================"
+echo "            Install Morse"
+echo "========================================"
+
 if [ ! -d morse ]; then
   git clone https://github.com/pierriko/morse.git
   cd morse
@@ -33,11 +46,15 @@ else
     mv build build.`date +%s`
   fi
 fi
-# TODO wait $! # $! as PID of `apt-get install &` (pb with sudo)
+
 mkdir build && cd build
 cmake -DBUILD_ROS_SUPPORT=ON  .. 
 sudo make install
 echo "Morse built, do 'morse check' to check"
+
+echo "========================================"
+echo "            Install PyYAML (Python3)"
+echo "========================================"
 
 # Morse/ROS integration
 # PyYAML
@@ -53,7 +70,9 @@ if [ ! -d $PYYAML ]; then
   sudo python3.1 setup.py install
 fi
 
-echo "ROS-Py3 : patch ROS for a Python 3 support"
+echo "========================================"
+echo "            Patch ROS (Python3 support)"
+echo "========================================"
 echo "( http://www.openrobots.org/morse/doc/stable/user/installation.html#ros )"
 # ROS-Py3
 cd $WORKING_DIR
@@ -66,32 +85,14 @@ rosinstall $WORKING_DIR/ros-addons /opt/ros/diamondback http://ias.cs.tum.edu/~k
 . $WORKING_DIR/setup.sh
 rosmake ros ros_comm common_msgs sensor_msgs geometry_msgs 
 
-# bugfix hg doesnt stock empty dir
-mkdir $WORKING_DIR/ros-addons/rosjava/android/library/libs
+echo "========================================"
+echo "            Install ROSJava"
+echo "========================================"
 
-echo "Android SDK : still needed for http://rosjava.googlecode.com "
-echo "( http://developer.android.com/sdk )"
-cd $WORKING_DIR
-if [ ! -d android-sdk-linux_x86 ]; then
-  if [ ! -f android-sdk_r11-linux_x86.tgz ]; then
-    wget http://dl.google.com/android/android-sdk_r11-linux_x86.tgz
-  fi
-  tar zxf android-sdk_r11-linux_x86.tgz
-  ./android-sdk-linux_x86/tools/android &
-  echo "(*) please install: "
-  echo "  [*] Android SDK Platform-tools, revision 5"
-  echo "  [*] SDK Platform Android 2.3.3, API 10"
-  for prop in `find $WORKING_DIR/ros-addons/rosjava/android/ -name "default.properties"`; do
-    echo "sdk.dir=$WORKING_DIR/android-sdk-linux_x86" >> $prop
-  done
-  echo "(*) please edit target=android-10"
-  find $WORKING_DIR/ros-addons/rosjava/android/ -name "default.properties" | xargs gedit &
-  echo "export JAVA_HOME=/usr/lib/jvm/java-6-openjdk" >> $WORKING_DIR/setup.sh
-fi
+roscd rosjava
+ant dist
 
-echo "(*) once you installed the SDK through the android tool, execute:"
-echo "source $WORKING_DIR/setup.sh && roscd rosjava && ant dist"
-echo
-echo
+echo "done"
 apt-get moo
+
 
