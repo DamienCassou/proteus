@@ -5,16 +5,22 @@
 # Ubuntu Lucid (10.04 i386)
 #
 
+DISTRIBUTION=$(lsb_release -c | awk '{print $2;}')
 WORKING_DIR=`pwd`
 
 echo "========================================"
 echo "            Install ROS"
 echo "========================================"
 
-sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu lucid main" > /etc/apt/sources.list.d/ros-latest.list'
+echo "deb http://packages.ros.org/ros/ubuntu ${DISTRIBUTION} main" | sudo tee /etc/apt/sources.list.d/ros-latest.list
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update
-sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full openjdk-6-jdk ant1.8 
+sudo apt-get install build-essential g++ cmake python-setuptools wget subversion git-core mercurial python3.1-dev python-yaml libyaml-dev ruby rubygems doxygen ros-diamondback-desktop-full openjdk-6-jdk 
+if [ $DISTRIBUTION = lucid ]; then
+    sudo apt-get install ant1.8
+else
+    sudo apt-get install ant
+fi
 
 echo "========================================"
 echo "            Install Blender"
@@ -58,7 +64,9 @@ echo "========================================"
 
 # Morse/ROS integration
 # PyYAML
-# sudo apt-get install python3-yaml # if >= maverick (10.10)
+if [ $DISTRIBUTION != lucid ]; then
+    sudo apt-get install python3-yaml
+fi
 cd $WORKING_DIR
 PYYAML=PyYAML-3.09
 if [ ! -d $PYYAML ]; then
