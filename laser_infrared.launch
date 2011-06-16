@@ -1,0 +1,4 @@
+<launch>
+  <node name="laser_infrared" pkg="proteus_tf" type="laser_infrared.py" respawn="false" output="screen"/>
+</launch>
+
